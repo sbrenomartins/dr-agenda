@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, MoveUp, MoveUpRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -45,7 +45,7 @@ const SignInForm = () => {
     },
   });
 
-  const onLoginSubmit = async (data: z.infer<typeof loginSchema>) => {
+  const handleLoginSubmit = async (data: z.infer<typeof loginSchema>) => {
     await authClient.signIn.email(
       {
         email: data.email,
@@ -62,10 +62,17 @@ const SignInForm = () => {
     );
   };
 
+  const handleGoogleLogin = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+    });
+  };
+
   return (
     <Card>
       <Form {...loginForm}>
-        <form onSubmit={loginForm.handleSubmit(onLoginSubmit)}>
+        <form onSubmit={loginForm.handleSubmit(handleLoginSubmit)}>
           <CardHeader>
             <CardTitle>Login</CardTitle>
             <CardDescription>Faça login para continuar.</CardDescription>
@@ -103,17 +110,28 @@ const SignInForm = () => {
             />
           </CardContent>
           <CardFooter>
-            <Button
-              className="w-full"
-              type="submit"
-              disabled={loginForm.formState.isSubmitting}
-            >
-              {loginForm.formState.isSubmitting ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                "Entrar"
-              )}
-            </Button>
+            <div className="w-full space-y-3">
+              <Button
+                className="w-full"
+                type="submit"
+                disabled={loginForm.formState.isSubmitting}
+              >
+                {loginForm.formState.isSubmitting ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Entrar"
+                )}
+              </Button>
+              <Button
+                className="w-full"
+                variant="outline"
+                type="button"
+                onClick={handleGoogleLogin}
+              >
+                <MoveUpRightIcon />
+                Entrar com Google
+              </Button>
+            </div>
           </CardFooter>
         </form>
       </Form>
